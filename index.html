@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0f141b">
+<meta name="color-scheme" content="dark">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="TDS Random">
+<meta name="description" content="Randomizer pour Tower Defense Simulator : tours, mode et map tirés au hasard.">
+<meta property="og:title" content="TDS Randomizer">
+<meta property="og:description" content="Tours, mode et map tirés au hasard pour Tower Defense Simulator.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%97%BC%3C/text%3E%3C/svg%3E">
+<title>TDS Randomizer</title>
+<style>
+:root{--bg:#0f141b;--panel:#18202b;--line:#2a3646;--text:#e9eef4;--mute:#8a99ab;--gold:#ffb524;--gold-ink:#241800;
+--c-starter:#7bd88f;--c-inter:#5cc8ff;--c-adv:#b48cff;--c-hard:#ff6b6b;--c-gold:#ffd23f;--c-excl:#ff8fd0;--c-rem:#8a99ab}
+*{box-sizing:border-box}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.45 "Segoe UI",system-ui,sans-serif}
+main{max-width:1100px;margin:0 auto;padding:24px 16px 64px}
+h1{font-size:28px;margin:0 0 4px;letter-spacing:-.01em}
+.sub{color:var(--mute);margin:0 0 20px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px;margin-bottom:16px}
+.row{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+button{font:inherit;color:var(--text);background:#223044;border:1px solid var(--line);border-radius:8px;padding:8px 14px;cursor:pointer}
+button:hover{background:#2b3d55}
+button:focus-visible,input:focus-visible,summary:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+button.main{background:var(--gold);color:var(--gold-ink);border-color:var(--gold);font-weight:700;padding:10px 20px}
+button.main:hover{background:#ffc655}
+.stepper{display:flex;align-items:center;gap:10px}
+.stepper b{min-width:28px;text-align:center;font-size:22px}
+.stepper button{width:36px;padding:6px 0;font-size:18px}
+label.chk{display:inline-flex;gap:6px;align-items:center;cursor:pointer;color:var(--mute);font-size:14px;margin:4px 12px 4px 0}
+label.chk input{accent-color:var(--gold)}
+details{margin-top:12px}summary{cursor:pointer;color:var(--mute)}
+.pool{margin-top:8px}.pool h4{margin:10px 0 2px;font-size:13px;color:var(--mute);font-weight:600}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+@media(max-width:700px){.two{grid-template-columns:1fr}}
+.big{display:flex;flex-direction:column;gap:8px;margin:0}
+.big .lab{color:var(--mute);font-size:14px}
+.big .val{font-size:30px;font-weight:800;line-height:1.1;color:var(--gold)}
+.big .tag{color:var(--mute);font-size:14px;min-height:20px}
+.players{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:16px}
+.player{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px}
+.player header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.player h3{margin:0;font-size:17px}
+.player header button{padding:4px 10px;font-size:13px}
+.slot{display:flex;align-items:center;gap:10px;padding:8px 8px 8px 10px;margin-top:6px;background:#121922;border-left:4px solid var(--k);border-radius:6px}
+.slot .n{flex:1;font-weight:600}.slot small{display:block;color:var(--mute);font-weight:400;font-size:12px}
+.slot button{padding:4px 9px;font-size:16px}
+.fresh{animation:pop .3s ease-out}
+@keyframes pop{from{transform:scale(.94);opacity:.4}to{transform:none;opacity:1}}
+@media(prefers-reduced-motion:reduce){.fresh{animation:none}}
+.foot{color:var(--mute);font-size:13px;margin-top:24px}
+html{-webkit-text-size-adjust:100%}
+button,summary,label.chk{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.slot .n{overflow-wrap:anywhere}
+@media (pointer:coarse){
+  button{min-height:44px}
+  .stepper button{width:48px}
+  .slot button{min-width:44px;min-height:44px}
+  label.chk{min-height:44px;margin-right:16px}
+  label.chk input{width:22px;height:22px}
+  summary{padding:10px 0}
+}
+@media (max-width:600px){
+  main{padding:16px 12px 88px}
+  h1{font-size:22px}
+  .sub{font-size:14px}
+  .big .val{font-size:26px}
+  .players{grid-template-columns:1fr}
+  #all{position:fixed;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:5;border-radius:999px;padding:12px 22px;box-shadow:0 4px 16px rgba(0,0,0,.5)}
+}
+</style>
+</head>
+<body>
+<main>
+<h1>Tower Defense Simulator : Randomizer</h1>
+<p class="sub">Tire au hasard les tours de chaque joueur, le mode et la map. Chaque élément se relance séparément.</p>
+
+<section class="panel">
+  <div class="row">
+    <span>Nombre de joueurs</span>
+    <div class="stepper"><button id="minus" aria-label="Moins de joueurs">−</button><b id="count">2</b><button id="plus" aria-label="Plus de joueurs">+</button></div>
+    <button class="main" id="all">Tout tirer</button>
+    <button id="copy">Copier le résumé</button>
+    <span id="msg" class="sub" style="margin:0"></span>
+  </div>
+  <div style="margin-top:12px">
+    <label class="chk"><input type="checkbox" id="dupP" checked>Pas de doublon pour un même joueur</label>
+    <label class="chk"><input type="checkbox" id="dupA">Pas de doublon entre joueurs</label>
+    <label class="chk"><input type="checkbox" id="hard">Mode hard : les tours faibles sortent plus souvent</label>
+  </div>
+  <details><summary>Choisir ce qui peut être tiré (tours, modes, maps)</summary>
+    <div class="pool" id="pools"></div>
+  </details>
+</section>
+
+<section class="two">
+  <div class="panel big"><span class="lab">Mode</span><span class="val" id="mode">-</span><span class="tag"></span><div><button id="rMode">Relancer le mode</button></div></div>
+  <div class="panel big"><span class="lab">Map</span><span class="val" id="map">-</span><span class="tag" id="mapTag"></span><div><button id="rMap">Relancer la map</button></div></div>
+</section>
+
+<section class="players" id="players"></section>
+<p class="foot" id="foot"></p>
+</main>
+
+<script>
+const CAT = {
+  starter:["Débutantes","--c-starter"], inter:["Intermédiaires","--c-inter"], adv:["Avancées","--c-adv"],
+  hard:["Hardcore","--c-hard"], gold:["Golden (Golden Perks)","--c-gold"], excl:["Exclusives / événements","--c-excl"], rem:["Retirées du jeu","--c-rem"]
+};
+const TOWERS = {
+  starter:"Scout|Sniper|Paintballer|Demoman|Hunter|Soldier|Militant",
+  inter:"Freezer|Assassin|Shotgunner|Pyromancer|Ace Pilot|Medic|Farm|Rocketeer|Trapper|Military Base|Crook Boss",
+  adv:"Electroshocker|Commander|Warden|Cowboy|DJ Booth|Minigunner|Ranger|Pursuit|Gatling Gun|Turret|Mortar|Mercenary Base",
+  hard:"Brawler|Necromancer|Accelerator|Engineer|Hacker",
+  gold:"Golden Minigunner|Golden Pyromancer|Golden Crook Boss|Golden Scout|Golden Cowboy|Golden Soldier",
+  excl:"Gladiator|Commando|Slasher|Frost Blaster|Archer|Swarmer|Toxic Gunner|Sledger|Executioner|Elf Camp|Jester|Cryomancer|Hallow Punk|Harvester|Snowballer|Elementalist|Firework Technician|Biologist|Warlock|Spotlight Tech|War Machine|Mecha Base",
+  rem:"Sentry"
+};
+const MODES = ["Facile","Casual","Intermédiaire","Molten","Fallen","Frost","Hardcore","Voidcore","Pizza Party","Polluted Wasteland","Badlands"];
+const MAPGROUPS = {
+  survie:"Survie",communaute:"Communauté",hardcore:"Hardcore",speciales:"Spéciales",evenements:"Événements",supprimees:"Supprimées",pvp:"PVP"
+};
+const MAPS = [
+ ["survie","Très facile","Summer Castle"],
+ ["survie","Facile","Portland|Grass Isle|Toyboard|Harbor|Necropolis|Sky Islands|Abandoned City|Autumn Falling|Crossroads|Forest Camp|Fungi Island|Rocket Arena|Tropical Isles|U-Turn|Winter Bridges|Retro Crossroads|Retro Rocket Arena|Retro Stained Temple"],
+ ["survie","Normal","Crystal Cave|Cyber City|Medieval Times|Spring Fever|Nether|Moon Base|Deserted Village|Simplicity|Four Seasons|Tropical Industries|Stained Temple|Sugar Rush|Farm Lands|Marshlands|Iceville|Meltdown|Night Station|Ruby Escort|Wrecked Battlefield|Wrecked Battlefield II|Retro Lighthouse|Lighthaos|Coral Deep"],
+ ["survie","Difficile","Winter Abyss|Legacy Winter Abyss|Dusty Bridges|Legacy Dusty Bridges|Abyssal Trench|Candy Valley|Forgotten Docks|Cataclysm|Construction Crazy|Retro Gilded Path|Sacred Mountains|The Heights|Retro The Heights|Retro Zone"],
+ ["survie","Insane","Space City|Dead Ahead|Infernal Abyss|Lay By|Winter Stronghold|Mason Arch|Black Spot Exchange|Hot Spot|Gilded Path"],
+ ["communaute","Map communautaire","Area 52|Atlas Colosseum|Enchanted Forest|Derelict Outpost|Happy Home of Robloxia|Honey Valley|Musaceae Kingdom|The Heavens|Legacy Simplicity|Legacy Space City|Legacy Retro Zone"],
+ ["hardcore","Map hardcore","Unknown Garden"],
+ ["speciales","Map spéciale","Polluted Wasteland II|Badlands II|Pizza Party"],
+ ["evenements","Événement","Nightmare Carnival|Area 51|Village of Despair|Eggy Island|Trick or Threat Town|SK8 P4RK|Outpost 32|Rotfield|Foggy Forest|Tower Outskirts|Totality Tower|D00M's Revenge|Cold Ambush|A Dark Tale|The Haunted Past|The Great Finale|Krampus Frosthold|Failed Gateway|The Nightmare Realm|Containment|Outpost 16|Banlands|Blind Faith|Bathroom Approach|The Narratorium|Backrooms"],
+ ["supprimees","Map supprimée","Robloxia|End of the Line|Canyon|Candy Cane Lane|Castle|Sky Lands|Fungi Forest|Grave Yard|Doomspire|Freight Fright|Polluted Wasteland|Badlands|Voidlands|High Land"],
+ ["pvp","Map PVP","Chess Board|Castle Outskirts"]
+];
+const towers = Object.entries(TOWERS).flatMap(([c,s])=>s.split("|").map(n=>({n,c})));
+const maps = MAPS.flatMap(([g,tag,s])=>s.split("|").map(n=>({n,g,tag})));
+
+// Puissance estimée de chaque tour (1 = faible, 5 = très forte). Modifie cette liste si tu n'es pas d'accord.
+const TIERS = {
+  1:"Scout|Soldier|Militant|Paintballer|Demoman|Sentry|Medic|Trapper|Freezer|Shotgunner|Hunter",
+  2:"Assassin|Pyromancer|Ace Pilot|Farm|Rocketeer|Military Base|Crook Boss|Electroshocker|Warden|Cowboy|Snowballer|Archer|Jester|Elf Camp|Golden Scout|Golden Soldier",
+  4:"Ranger|Turret|Accelerator|Engineer|Mercenary Base|Hacker|Golden Pyromancer|Gladiator|Executioner|Cryomancer|Elementalist|Warlock|Spotlight Tech",
+  5:"Commando|War Machine|Mecha Base|Golden Minigunner"
+};
+const STR = {}; Object.entries(TIERS).forEach(([k,s])=>s.split("|").forEach(n=>STR[n]=+k));
+const strength = t => STR[t.n] || 3;              // les tours non listées = puissance 3
+const HARD_W = [0,8,5,3,1.5,1];                    // poids de tirage selon la puissance
+function pickTower(c){
+  if(!$("hard").checked) return rnd(c);
+  const w = c.map(t=>HARD_W[strength(t)]); let r = Math.random()*w.reduce((x,y)=>x+y,0);
+  for(let i=0;i<c.length;i++){ r-=w[i]; if(r<=0) return c[i]; }
+  return c[c.length-1];
+}
+
+const on = {cat:new Set(Object.keys(CAT)), mode:new Set(MODES), grp:new Set(Object.keys(MAPGROUPS))};
+let count = 2, players = [], mode = null, map = null, fresh = new Set();
+const $ = id => document.getElementById(id);
+const rnd = a => a[Math.floor(Math.random()*a.length)];
+
+function assign(pi, si){
+  const pool = towers.filter(t=>on.cat.has(t.c));
+  const cur = players[pi][si], ex = new Set();
+  players.forEach((pl,i)=>pl.forEach((t,j)=>{
+    if(!t || (i===pi && j===si)) return;
+    if($("dupA").checked || ($("dupP").checked && i===pi)) ex.add(t.n);
+  }));
+  let c = pool.filter(t=>!ex.has(t.n) && t!==cur);
+  if(!c.length) c = pool.filter(t=>t!==cur);
+  if(!c.length) c = pool;
+  players[pi][si] = c.length ? pickTower(c) : null;
+  fresh.add(pi+"-"+si);
+}
+function rollPlayer(pi){ players[pi] = Array(5).fill(null); for(let s=0;s<5;s++) assign(pi,s); }
+function rollMode(){
+  const p = MODES.filter(m=>on.mode.has(m)); const c = p.filter(m=>m!==mode);
+  mode = (c.length?c:p).length ? rnd(c.length?c:p) : null; fresh.add("mode");
+}
+function rollMap(){
+  const p = maps.filter(m=>on.grp.has(m.g)); const c = p.filter(m=>m!==map);
+  map = (c.length?c:p).length ? rnd(c.length?c:p) : null; fresh.add("map");
+}
+function rollAll(){
+  players = Array.from({length:count},()=>Array(5).fill(null));
+  for(let s=0;s<5;s++) for(let p=0;p<count;p++) assign(p,s);
+  rollMode(); rollMap();
+}
+function setCount(n){
+  count = Math.max(1,Math.min(10,n));
+  while(players.length<count){ players.push(null); rollPlayer(players.length-1); }
+  players.length = count; render();
+}
+
+function render(){
+  $("count").textContent = count;
+  $("mode").textContent = mode || "Aucun mode actif";
+  $("map").textContent = map ? map.n : "Aucune map active";
+  $("mapTag").textContent = map ? map.tag : "";
+  ["mode","map"].forEach(k=>{ const e=$(k); e.classList.toggle("fresh", fresh.has(k)); });
+  $("players").innerHTML = players.map((pl,pi)=>`
+    <div class="player"><header><h3>Joueur ${pi+1}</h3><button data-rp="${pi}">Relancer le joueur</button></header>
+    ${pl.map((t,si)=>t?`<div class="slot ${fresh.has(pi+"-"+si)?"fresh":""}" style="--k:var(${CAT[t.c][1]})">
+      <div class="n">${t.n}<small>${CAT[t.c][0]}${$("hard").checked?" · puissance "+strength(t)+"/5":""}</small></div>
+      <button data-rs="${pi}-${si}" title="Relancer le slot ${si+1}" aria-label="Relancer le slot ${si+1} du joueur ${pi+1}">↻</button></div>`
+      :`<div class="slot"><div class="n">Aucune tour disponible</div></div>`).join("")}
+    </div>`).join("");
+  fresh.clear();
+  const nT = towers.filter(t=>on.cat.has(t.c)).length, nM = maps.filter(m=>on.grp.has(m.g)).length;
+  $("foot").textContent = `${nT} tours, ${MODES.filter(m=>on.mode.has(m)).length} modes et ${nM} maps dans le tirage. Liste établie d'après le wiki de TDS.`;
+}
+
+function buildPools(){
+  const chk = (set,key,label,extra="") => `<label class="chk"><input type="checkbox" data-set="${extra}" data-key="${key}" checked>${label}</label>`;
+  $("pools").innerHTML =
+    `<h4>Tours</h4>` + Object.entries(CAT).map(([k,v])=>chk("cat",k,`${v[0]} (${TOWERS[k].split("|").length})`,"cat")).join("") +
+    `<h4>Modes</h4>` + MODES.map(m=>chk("mode",m,m,"mode")).join("") +
+    `<h4>Maps</h4>` + Object.entries(MAPGROUPS).map(([k,v])=>chk("grp",k,`${v} (${maps.filter(m=>m.g===k).length})`,"grp")).join("");
+  $("pools").addEventListener("change",e=>{
+    const el = e.target, s = on[el.dataset.set];
+    el.checked ? s.add(el.dataset.key) : s.delete(el.dataset.key);
+    render();
+  });
+}
+
+$("hard").onchange = render;
+$("plus").onclick = ()=>setCount(count+1);
+$("minus").onclick = ()=>setCount(count-1);
+$("all").onclick = ()=>{ rollAll(); render(); };
+$("rMode").onclick = ()=>{ rollMode(); render(); };
+$("rMap").onclick = ()=>{ rollMap(); render(); };
+$("players").onclick = e=>{
+  const b = e.target.closest("button"); if(!b) return;
+  if(b.dataset.rp!==undefined) rollPlayer(+b.dataset.rp);
+  else if(b.dataset.rs){ const [p,s]=b.dataset.rs.split("-").map(Number); assign(p,s); }
+  render();
+};
+$("copy").onclick = async ()=>{
+  const txt = `Mode : ${mode}\nMap : ${map?map.n:"-"}\n` + players.map((p,i)=>`Joueur ${i+1} : ${p.map(t=>t?t.n:"-").join(", ")}`).join("\n");
+  try{ await navigator.clipboard.writeText(txt); $("msg").textContent="Copié."; }
+  catch{ try{ await navigator.share({text:txt}); }catch{ $("msg").textContent="Copie impossible depuis ce navigateur."; } }
+  setTimeout(()=>$("msg").textContent="",2000);
+};
+
+buildPools(); rollAll(); render();
+</script>
+</body>
+</html>
