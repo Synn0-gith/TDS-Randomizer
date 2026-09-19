@@ -15,7 +15,7 @@
 <title>TDS Randomizer</title>
 <style>
 :root{--bg:#0f141b;--panel:#18202b;--line:#2a3646;--text:#e9eef4;--mute:#8a99ab;--gold:#ffb524;--gold-ink:#241800;
---c-starter:#7bd88f;--c-inter:#5cc8ff;--c-adv:#b48cff;--c-hard:#ff6b6b;--c-gold:#ffd23f;--c-excl:#ff8fd0;--c-rem:#8a99ab}
+--c-starter:#7bd88f;--c-inter:#5cc8ff;--c-adv:#b48cff;--c-hard:#ff6b6b;--c-gold:#ffd23f;--c-excl:#ff8fd0;--c-rem:#8a99ab;--c-evo:#2dd4bf}
 *{box-sizing:border-box}
 :root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
@@ -54,6 +54,7 @@ details{margin-top:12px}summary{cursor:pointer;color:var(--mute)}
 .fresh{animation:pop .3s ease-out}
 @keyframes pop{from{transform:scale(.94);opacity:.4}to{transform:none;opacity:1}}
 @media(prefers-reduced-motion:reduce){.fresh{animation:none}}
+#err{background:#3a1418;border:1px solid #ff6b6b;color:#ffd6d6;border-radius:8px;padding:10px 14px;margin-bottom:16px;font-size:14px}
 .foot{color:var(--mute);font-size:13px;margin-top:24px}
 html{-webkit-text-size-adjust:100%}
 button,summary,label.chk{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
@@ -80,6 +81,8 @@ button,summary,label.chk{touch-action:manipulation;-webkit-tap-highlight-color:t
 <main>
 <h1>Tower Defense Simulator : Randomizer</h1>
 <p class="sub">Tire au hasard les tours de chaque joueur, le mode et la map. Chaque élément se relance séparément.</p>
+
+<div id="err" hidden></div>
 
 <section class="panel">
   <div class="row">
@@ -109,18 +112,144 @@ button,summary,label.chk{touch-action:manipulation;-webkit-tap-highlight-color:t
 </main>
 
 <script>
+// ============================================================================
+//  LISTE DES TOURS  (c'est ici que tu ajoutes tes tours)
+//
+//  Pour ajouter une tour : copie une ligne ci-dessous, colle-la n'importe où
+//  dans la liste, et change le nom. Une ligne = une tour.
+//
+//      ["Nom de la tour",   "catégorie",  puissance],
+//
+//  catégorie : starter (débutante) | inter (intermédiaire) | adv (avancée)
+//              hard (hardcore) | evo (évoluée) | gold (golden)
+//              excl (exclusive) | rem (retirée)
+//  puissance : de 1 (faible) à 5 (très forte). Sert au "mode hard" : plus le
+//              chiffre est petit, plus la tour sort souvent. En cas de doute, mets 3.
+//
+//  N'oublie pas la virgule à la fin de la ligne et les guillemets.
+//  Si tu te trompes, un message rouge s'affichera en haut de la page.
+// ============================================================================
+const TOURS = [
+  // ---- Débutantes ----
+  ["Scout",                   "starter",1],
+  ["Sniper",                  "starter",1],
+  ["Paintballer",             "starter",1],
+  ["Demoman",                 "starter",1],
+  ["Boomerang",               "starter",1],
+  ["Slime Trooper",           "starter",1],
+  ["Soldier",                 "starter",1],
+  // ---- Intermédiaires ----
+  ["Crook Boss",              "inter",  2],
+  ["Medic",                   "inter",  1],
+  ["Assassin",                "inter",  2],
+  ["Freezer",                 "inter",  1],
+  ["Hunter",                  "inter",  1],
+  ["Rocketeer",               "inter",  2],
+  ["Military Base",           "inter",  2],
+  ["Farm",                    "inter",  4],
+  ["Trapper",                 "inter",  1],
+  ["Ace Pilot",               "inter",  2],
+  ["Pyromancer",              "inter",  2],
+  ["Electroshocker",          "inter",  3],
+  ["Militant",                "inter",  1],
+  ["Shotgunner",              "inter",  1],
+  ["Pulse Trooper",           "inter",  2],
+  // ---- Avancées ----
+  ["Mortar",                  "adv",    3],
+  ["Turret",                  "adv",    4],
+  ["Pursuit",                 "adv",    3],
+  ["Mercenary Base",          "adv",    4],
+  ["Tesla",                   "adv",    3],
+  ["Commander",               "adv",    5],
+  ["Cowboy",                  "adv",    3],
+  ["Warden",                  "adv",    2],
+  ["DJ Booth",                "adv",    5],
+  ["Minigunner",              "adv",    3],
+  ["Ranger",                  "adv",    4],
+  ["Gatling Gun",             "adv",    4],
+  ["Saboteur",                "adv",    3],
+  // ---- Hardcore ----
+  ["Brawler",                 "hard",   3],
+  ["Necromancer",             "hard",   3],
+  ["Accelerator",             "hard",   5],
+  ["Engineer",                "hard",   5],
+  ["Hacker",                  "hard",   4],
+  // ---- Évoluées (Evolved) ----
+  ["Operator",                "evo",    4],
+  ["Kingpin",                 "evo",    5],
+  ["Juggernaut",              "evo",    5],
+  ["Enforcer",                "evo",    5],
+  // ---- Golden ----
+  ["Golden Scout",            "gold",   2],
+  ["Golden Demoman",          "gold",   2],
+  ["Golden Soldier",          "gold",   2],
+  ["Golden Crook Boss",       "gold",   4],
+  ["Golden Pyromancer",       "gold",   4],
+  ["Golden Cowboy",           "gold",   3],
+  ["Golden Minigunner",       "gold",   5],
+  // ---- Exclusives / événements ----
+  ["Gladiator",               "excl",   4],
+  ["Commando",                "excl",   5],
+  ["Slasher",                 "excl",   3],
+  ["Frost Blaster",           "excl",   3],
+  ["Archer",                  "excl",   2],
+  ["Swarmer",                 "excl",   3],
+  ["Toxic Gunner",            "excl",   3],
+  ["Sledger",                 "excl",   3],
+  ["Executioner",             "excl",   4],
+  ["Elf Camp",                "excl",   2],
+  ["Jester",                  "excl",   2],
+  ["Cryomancer",              "excl",   4],
+  ["Harvester",               "excl",   3],
+  ["Hallow Punk",             "excl",   3],
+  ["Elementalist",            "excl",   4],
+  ["Snowballer",              "excl",   2],
+  ["Firework Technician",     "excl",   3],
+  ["Biologist",               "excl",   3],
+  ["Warlock",                 "excl",   4],
+  ["Spotlight Tech",          "excl",   4],
+  ["War Machine",             "excl",   5],
+  ["Mecha Base",              "excl",   5],
+  // ---- Retirées / jamais sorties ----
+  ["Sentry",                  "rem",    1],
+  ["Mine",                    "rem",    1],
+  ["Moderator",               "rem",    1],
+  ["Railgunner",              "rem",    1],
+  ["Twitgunner",              "rem",    1],
+  ["Void Miner",              "rem",    2],
+  ["Combatant",               "rem",    1],
+  ["Crystallizer",            "rem",    1],
+  ["Time Dilator",            "rem",    1],
+];
+// ============================================================================
+
+// ============================================================================
+//  MAPS RÉSERVÉES À CERTAINS MODES
+//
+//  Si le mode tiré est dans cette liste, la map est tirée UNIQUEMENT parmi les
+//  maps indiquées (les filtres de maps ne comptent alors plus). Les autres modes
+//  (Facile, Casual, Intermédiaire, Molten, Fallen, Frost) tirent dans toutes les
+//  autres maps.
+//
+//  Pour ajouter un mode : ajoute une ligne  "Nom du mode": ["Map 1", "Map 2"],
+//  (le nom du mode doit être écrit comme dans la liste MODES plus bas).
+// ============================================================================
+const MAPS_PAR_MODE = {
+  "Hardcore":           ["Wrecked Battlefield", "Unknown Garden", "Wretched Front", "Outskirts Commune"],
+  "Voidcore":           ["Wrecked Battlefield", "Unknown Garden", "Wretched Front", "Outskirts Commune"],
+  "Pizza Party":        ["Pizza Party"],
+  "Polluted Wasteland": ["Polluted Wasteland II"],
+  "Badlands":           ["Badlands II"],
+};
+// Maps qui n'existent QUE dans leur mode ci-dessus (elles ne sortent jamais avec
+// un autre mode). "Wrecked Battlefield" n'y est pas : elle se joue aussi en survie.
+const MAPS_RESERVEES = ["Unknown Garden", "Wretched Front", "Outskirts Commune", "Pizza Party", "Polluted Wasteland II", "Badlands II"];
+// ============================================================================
+
 const CAT = {
   starter:["Débutantes","--c-starter"], inter:["Intermédiaires","--c-inter"], adv:["Avancées","--c-adv"],
-  hard:["Hardcore","--c-hard"], gold:["Golden (Golden Perks)","--c-gold"], excl:["Exclusives / événements","--c-excl"], rem:["Retirées du jeu","--c-rem"]
-};
-const TOWERS = {
-  starter:"Scout|Sniper|Paintballer|Demoman|Hunter|Soldier|Militant",
-  inter:"Freezer|Assassin|Shotgunner|Pyromancer|Ace Pilot|Medic|Farm|Rocketeer|Trapper|Military Base|Crook Boss",
-  adv:"Electroshocker|Commander|Warden|Cowboy|DJ Booth|Minigunner|Ranger|Pursuit|Gatling Gun|Turret|Mortar|Mercenary Base",
-  hard:"Brawler|Necromancer|Accelerator|Engineer|Hacker",
-  gold:"Golden Minigunner|Golden Pyromancer|Golden Crook Boss|Golden Scout|Golden Cowboy|Golden Soldier",
-  excl:"Gladiator|Commando|Slasher|Frost Blaster|Archer|Swarmer|Toxic Gunner|Sledger|Executioner|Elf Camp|Jester|Cryomancer|Hallow Punk|Harvester|Snowballer|Elementalist|Firework Technician|Biologist|Warlock|Spotlight Tech|War Machine|Mecha Base",
-  rem:"Sentry"
+  hard:["Hardcore","--c-hard"], evo:["Évoluées (Evolved)","--c-evo"], gold:["Golden (Golden Perks)","--c-gold"],
+  excl:["Exclusives / événements","--c-excl"], rem:["Retirées / jamais sorties","--c-rem"]
 };
 const MODES = ["Facile","Casual","Intermédiaire","Molten","Fallen","Frost","Hardcore","Voidcore","Pizza Party","Polluted Wasteland","Badlands"];
 const MAPGROUPS = {
@@ -133,24 +262,24 @@ const MAPS = [
  ["survie","Difficile","Winter Abyss|Legacy Winter Abyss|Dusty Bridges|Legacy Dusty Bridges|Abyssal Trench|Candy Valley|Forgotten Docks|Cataclysm|Construction Crazy|Retro Gilded Path|Sacred Mountains|The Heights|Retro The Heights|Retro Zone"],
  ["survie","Insane","Space City|Dead Ahead|Infernal Abyss|Lay By|Winter Stronghold|Mason Arch|Black Spot Exchange|Hot Spot|Gilded Path"],
  ["communaute","Map communautaire","Area 52|Atlas Colosseum|Enchanted Forest|Derelict Outpost|Happy Home of Robloxia|Honey Valley|Musaceae Kingdom|The Heavens|Legacy Simplicity|Legacy Space City|Legacy Retro Zone"],
- ["hardcore","Map hardcore","Unknown Garden"],
+ ["hardcore","Map hardcore","Unknown Garden|Wretched Front|Outskirts Commune"],
  ["speciales","Map spéciale","Polluted Wasteland II|Badlands II|Pizza Party"],
  ["evenements","Événement","Nightmare Carnival|Area 51|Village of Despair|Eggy Island|Trick or Threat Town|SK8 P4RK|Outpost 32|Rotfield|Foggy Forest|Tower Outskirts|Totality Tower|D00M's Revenge|Cold Ambush|A Dark Tale|The Haunted Past|The Great Finale|Krampus Frosthold|Failed Gateway|The Nightmare Realm|Containment|Outpost 16|Banlands|Blind Faith|Bathroom Approach|The Narratorium|Backrooms"],
  ["supprimees","Map supprimée","Robloxia|End of the Line|Canyon|Candy Cane Lane|Castle|Sky Lands|Fungi Forest|Grave Yard|Doomspire|Freight Fright|Polluted Wasteland|Badlands|Voidlands|High Land"],
  ["pvp","Map PVP","Chess Board|Castle Outskirts"]
 ];
-const towers = Object.entries(TOWERS).flatMap(([c,s])=>s.split("|").map(n=>({n,c})));
+const towers = [], errs = [];
+TOURS.forEach((l,i)=>{
+  const [n,c,p] = l, seen = towers.some(t=>String(n).trim().toLowerCase()===t.n.toLowerCase());
+  if(!n || !String(n).trim()) errs.push(`ligne ${i+1} : nom manquant`);
+  else if(!CAT[c]) errs.push(`« ${n} » : catégorie « ${c} » inconnue (voir la liste en haut du code)`);
+  else if(!(p>=1 && p<=5)) errs.push(`« ${n} » : la puissance doit être un chiffre de 1 à 5`);
+  else if(seen) errs.push(`« ${n} » est écrite deux fois`);
+  else towers.push({n:String(n).trim(), c, p});
+});
 const maps = MAPS.flatMap(([g,tag,s])=>s.split("|").map(n=>({n,g,tag})));
 
-// Puissance estimée de chaque tour (1 = faible, 5 = très forte). Modifie cette liste si tu n'es pas d'accord.
-const TIERS = {
-  1:"Scout|Soldier|Militant|Paintballer|Demoman|Sentry|Medic|Trapper|Freezer|Shotgunner|Hunter",
-  2:"Assassin|Pyromancer|Ace Pilot|Farm|Rocketeer|Military Base|Crook Boss|Electroshocker|Warden|Cowboy|Snowballer|Archer|Jester|Elf Camp|Golden Scout|Golden Soldier",
-  4:"Ranger|Turret|Accelerator|Engineer|Mercenary Base|Hacker|Golden Pyromancer|Gladiator|Executioner|Cryomancer|Elementalist|Warlock|Spotlight Tech",
-  5:"Commando|War Machine|Mecha Base|Golden Minigunner"
-};
-const STR = {}; Object.entries(TIERS).forEach(([k,s])=>s.split("|").forEach(n=>STR[n]=+k));
-const strength = t => STR[t.n] || 3;              // les tours non listées = puissance 3
+const strength = t => t.p;   // puissance 1 à 5, lue dans la liste TOURS en haut du code
 const HARD_W = [0,8,5,3,1.5,1];                    // poids de tirage selon la puissance
 function pickTower(c){
   if(!$("hard").checked) return rnd(c);
@@ -159,6 +288,17 @@ function pickTower(c){
   return c[c.length-1];
 }
 
+Object.entries(MAPS_PAR_MODE).forEach(([m,l])=>{
+  if(!MODES.includes(m)) errs.push(`MAPS_PAR_MODE : le mode « ${m} » n'existe pas dans MODES`);
+  l.forEach(n=>{ if(!maps.some(x=>x.n===n)) errs.push(`MAPS_PAR_MODE : la map « ${n} » n'existe pas (mode ${m})`); });
+});
+MAPS_RESERVEES.forEach(n=>{ if(!maps.some(x=>x.n===n)) errs.push(`MAPS_RESERVEES : la map « ${n} » n'existe pas`); });
+
+// Maps que le mode donné peut tirer
+function mapPool(m=mode){
+  if(MAPS_PAR_MODE[m]) return maps.filter(x=>MAPS_PAR_MODE[m].includes(x.n));
+  return maps.filter(x=>on.grp.has(x.g) && !MAPS_RESERVEES.includes(x.n));
+}
 const on = {cat:new Set(Object.keys(CAT)), mode:new Set(MODES), grp:new Set(Object.keys(MAPGROUPS))};
 let count = 2, players = [], mode = null, map = null, fresh = new Set();
 const $ = id => document.getElementById(id);
@@ -181,15 +321,16 @@ function rollPlayer(pi){ players[pi] = Array(5).fill(null); for(let s=0;s<5;s++)
 function rollMode(){
   const p = MODES.filter(m=>on.mode.has(m)); const c = p.filter(m=>m!==mode);
   mode = (c.length?c:p).length ? rnd(c.length?c:p) : null; fresh.add("mode");
+  if(!map || !mapPool().includes(map)) rollMap();   // la map doit exister dans ce mode
 }
 function rollMap(){
-  const p = maps.filter(m=>on.grp.has(m.g)); const c = p.filter(m=>m!==map);
+  const p = mapPool(); const c = p.filter(m=>m!==map);
   map = (c.length?c:p).length ? rnd(c.length?c:p) : null; fresh.add("map");
 }
 function rollAll(){
   players = Array.from({length:count},()=>Array(5).fill(null));
   for(let s=0;s<5;s++) for(let p=0;p<count;p++) assign(p,s);
-  rollMode(); rollMap();
+  map = null; rollMode();
 }
 function setCount(n){
   count = Math.max(1,Math.min(10,n));
@@ -201,32 +342,36 @@ function render(){
   $("count").textContent = count;
   $("mode").textContent = mode || "Aucun mode actif";
   $("map").textContent = map ? map.n : "Aucune map active";
-  $("mapTag").textContent = map ? map.tag : "";
+  $("mapTag").textContent = map ? map.tag + (MAPS_PAR_MODE[mode] ? " · map du mode " + mode : "") : "";
   ["mode","map"].forEach(k=>{ const e=$(k); e.classList.toggle("fresh", fresh.has(k)); });
   $("players").innerHTML = players.map((pl,pi)=>`
     <div class="player"><header><h3>Joueur ${pi+1}</h3><button data-rp="${pi}">Relancer le joueur</button></header>
     ${pl.map((t,si)=>t?`<div class="slot ${fresh.has(pi+"-"+si)?"fresh":""}" style="--k:var(${CAT[t.c][1]})">
-      <div class="n">${t.n}<small>${CAT[t.c][0]}${$("hard").checked?" · puissance "+strength(t)+"/5":""}</small></div>
+      <div class="n">${esc(t.n)}<small>${CAT[t.c][0]}${$("hard").checked?" · puissance "+strength(t)+"/5":""}</small></div>
       <button data-rs="${pi}-${si}" title="Relancer le slot ${si+1}" aria-label="Relancer le slot ${si+1} du joueur ${pi+1}">↻</button></div>`
       :`<div class="slot"><div class="n">Aucune tour disponible</div></div>`).join("")}
     </div>`).join("");
   fresh.clear();
-  const nT = towers.filter(t=>on.cat.has(t.c)).length, nM = maps.filter(m=>on.grp.has(m.g)).length;
-  $("foot").textContent = `${nT} tours, ${MODES.filter(m=>on.mode.has(m)).length} modes et ${nM} maps dans le tirage. Liste établie d'après le wiki de TDS.`;
+  const nT = towers.filter(t=>on.cat.has(t.c)).length, nM = mapPool().length;
+  $("foot").textContent = `${nT} tours, ${MODES.filter(m=>on.mode.has(m)).length} modes ; ${nM} map${nM>1?"s":""} possible${nM>1?"s":""} avec le mode actuel. Listes vérifiées sur les wikis de TDS (mise à jour de septembre 2026).`;
 }
 
 function buildPools(){
-  const chk = (set,key,label,extra="") => `<label class="chk"><input type="checkbox" data-set="${extra}" data-key="${key}" checked>${label}</label>`;
+  const chk = (set,key,label) => `<label class="chk"><input type="checkbox" data-set="${set}" data-key="${esc(key)}" ${on[set].has(key)?"checked":""}>${esc(label)}</label>`;
   $("pools").innerHTML =
-    `<h4>Tours</h4>` + Object.entries(CAT).map(([k,v])=>chk("cat",k,`${v[0]} (${TOWERS[k].split("|").length})`,"cat")).join("") +
-    `<h4>Modes</h4>` + MODES.map(m=>chk("mode",m,m,"mode")).join("") +
-    `<h4>Maps</h4>` + Object.entries(MAPGROUPS).map(([k,v])=>chk("grp",k,`${v} (${maps.filter(m=>m.g===k).length})`,"grp")).join("");
-  $("pools").addEventListener("change",e=>{
-    const el = e.target, s = on[el.dataset.set];
-    el.checked ? s.add(el.dataset.key) : s.delete(el.dataset.key);
-    render();
-  });
+    `<h4>Tours</h4>` + Object.entries(CAT).map(([k,v])=>chk("cat",k,`${v[0]} (${towers.filter(t=>t.c===k).length})`)).join("") +
+    `<h4>Modes</h4>` + MODES.map(m=>chk("mode",m,m)).join("") +
+    `<h4>Maps</h4>` + Object.entries(MAPGROUPS).map(([k,v])=>[k,v,maps.filter(m=>m.g===k && !MAPS_RESERVEES.includes(m.n)).length]).filter(a=>a[2]>0).map(([k,v,n])=>chk("grp",k,`${v} (${n})`)).join("") +
+    `<p class="sub" style="margin:8px 0 0;font-size:13px">Ces filtres ne s'appliquent pas aux modes Hardcore, Voidcore, Pizza Party, Polluted Wasteland et Badlands, qui ont leurs propres maps.</p>`;
 }
+$("pools").addEventListener("change",e=>{
+  const el = e.target; if(!el.dataset.set) return;
+  const s = on[el.dataset.set];
+  el.checked ? s.add(el.dataset.key) : s.delete(el.dataset.key);
+  render();
+});
+
+const esc = x => String(x).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 
 $("hard").onchange = render;
 $("plus").onclick = ()=>setCount(count+1);
@@ -247,6 +392,7 @@ $("copy").onclick = async ()=>{
   setTimeout(()=>$("msg").textContent="",2000);
 };
 
+if(errs.length){ $("err").hidden=false; $("err").textContent="Erreur dans la liste des tours : "+errs.join(" ; "); }
 buildPools(); rollAll(); render();
 </script>
 </body>
