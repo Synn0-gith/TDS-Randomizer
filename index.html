@@ -37,13 +37,13 @@ label.chk{display:inline-flex;gap:6px;align-items:center;cursor:pointer;color:va
 label.chk input{accent-color:var(--gold)}
 details{margin-top:12px}summary{cursor:pointer;color:var(--mute)}
 .pool{margin-top:8px}.pool h4{margin:10px 0 2px;font-size:13px;color:var(--mute);font-weight:600}
-.two{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin-bottom:16px}
 @media(max-width:700px){.two{grid-template-columns:1fr}}
 .big{display:flex;flex-direction:column;gap:8px;margin:0}
 .big .lab{color:var(--mute);font-size:14px}
 .big .val{font-size:30px;font-weight:800;line-height:1.1;color:var(--gold)}
 .big .tag{color:var(--mute);font-size:14px;min-height:20px}
-.players{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:16px}
+.players{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:16px}
 .player{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px}
 .player header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
 .player h3{margin:0;font-size:17px}
@@ -51,9 +51,27 @@ details{margin-top:12px}summary{cursor:pointer;color:var(--mute)}
 .slot{display:flex;align-items:center;gap:10px;padding:8px 8px 8px 10px;margin-top:6px;background:#121922;border-left:4px solid var(--k);border-radius:6px}
 .slot .n{flex:1;font-weight:600}.slot small{display:block;color:var(--mute);font-weight:400;font-size:12px}
 .slot button{padding:4px 9px;font-size:16px}
+.slot{background:#121922;background:linear-gradient(90deg,color-mix(in srgb,var(--k) 18%,#121922),#121922 70%);min-height:62px}
+.ico{position:relative;flex:none;width:48px;height:52px;filter:drop-shadow(0 2px 3px rgba(0,0,0,.55))}
+.ico .hex,.ico img{position:absolute;inset:0;width:100%;height:100%}
+.ico .hex{clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);background:var(--k);background:linear-gradient(150deg,color-mix(in srgb,var(--k) 100%,#fff 12%),color-mix(in srgb,var(--k) 45%,#000));display:grid;place-items:center}
+.ico .hex::before{content:"";position:absolute;inset:3px;clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);background:repeating-conic-gradient(from var(--a),rgba(255,255,255,.16) 0 calc(180deg/var(--n)),rgba(0,0,0,.22) 0 calc(360deg/var(--n)))}
+.ico .hex::after{content:"";position:absolute;inset:0;clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);background:linear-gradient(180deg,rgba(255,255,255,.28),rgba(255,255,255,0) 45%)}
+.ico b{position:relative;z-index:1;color:#fff;font-size:16px;font-weight:800;letter-spacing:.02em;text-shadow:0 1px 2px rgba(0,0,0,.85),0 0 6px rgba(0,0,0,.5)}
+.ico img{object-fit:contain;z-index:2}
+.ico.has-img .hex{display:none}
 .fresh{animation:pop .3s ease-out}
 @keyframes pop{from{transform:scale(.94);opacity:.4}to{transform:none;opacity:1}}
 @media(prefers-reduced-motion:reduce){.fresh{animation:none}}
+[hidden]{display:none!important}
+input[type=text]{font:inherit;color:var(--text);background:#121922;border:1px solid var(--line);border-radius:8px;padding:8px 12px;min-height:40px;flex:1;min-width:150px}
+.hist{display:grid;gap:10px}
+.h{background:#121922;border:1px solid var(--line);border-radius:8px;padding:10px 12px}
+.h.mine{border-left:4px solid var(--gold)}
+.h .top{display:flex;justify-content:space-between;gap:12px;color:var(--mute);font-size:13px}
+.h .meta{font-weight:700;margin:4px 0 6px;overflow-wrap:anywhere}
+.h .mod{color:var(--gold)}
+.h .pl{font-size:14px;overflow-wrap:anywhere}.h .pl b{color:var(--mute);margin-right:6px}
 #err{background:#3a1418;border:1px solid #ff6b6b;color:#ffd6d6;border-radius:8px;padding:10px 14px;margin-bottom:16px;font-size:14px}
 .foot{color:var(--mute);font-size:13px;margin-top:24px}
 html{-webkit-text-size-adjust:100%}
@@ -96,18 +114,39 @@ button,summary,label.chk{touch-action:manipulation;-webkit-tap-highlight-color:t
     <label class="chk"><input type="checkbox" id="dupP" checked>Pas de doublon pour un même joueur</label>
     <label class="chk"><input type="checkbox" id="dupA">Pas de doublon entre joueurs</label>
     <label class="chk"><input type="checkbox" id="hard">Mode hard : les tours faibles sortent plus souvent</label>
+    <label class="chk"><input type="checkbox" id="modOn" checked><span id="modLabel">Modificateur aléatoire</span></label>
   </div>
   <details><summary>Choisir ce qui peut être tiré (tours, modes, maps)</summary>
     <div class="pool" id="pools"></div>
   </details>
+  <div class="row" style="margin-top:12px">
+    <label class="chk"><input type="checkbox" id="remember" checked>Se souvenir de mes choix sur cet appareil</label>
+    <button id="reset">Réinitialiser mes choix</button>
+  </div>
+  <div class="sub" style="font-size:12px;margin-top:4px">Pseudo, salle, nombre de joueurs, options et filtres sont enregistrés dans ton navigateur (jamais envoyés, pas de suivi ni de pub).</div>
 </section>
 
 <section class="two">
   <div class="panel big"><span class="lab">Mode</span><span class="val" id="mode">-</span><span class="tag"></span><div><button id="rMode">Relancer le mode</button></div></div>
   <div class="panel big"><span class="lab">Map</span><span class="val" id="map">-</span><span class="tag" id="mapTag"></span><div><button id="rMap">Relancer la map</button></div></div>
+  <div class="panel big" id="modifCard"><span class="lab">Modificateur</span><span class="val" id="modif">-</span><span class="tag" id="modifTag"></span><div><button id="rModif">Relancer le modificateur</button></div></div>
 </section>
 
 <section class="players" id="players"></section>
+<section class="panel" id="histPanel">
+  <h2 style="margin:0 0 4px;font-size:18px">Derniers tirages</h2>
+  <p class="sub" style="margin:0 0 12px;font-size:14px">Les 5 derniers tirages de la salle, visibles par tous ceux qui utilisent le même code de salle.</p>
+  <div class="row">
+    <label class="chk"><input type="checkbox" id="share" checked>Partager avec les autres</label>
+    <input type="text" id="room" maxlength="40" placeholder="Code de la salle" aria-label="Code de la salle">
+    <input type="text" id="who" maxlength="20" placeholder="Ton pseudo (facultatif)" aria-label="Ton pseudo">
+    <button id="link">Copier le lien de la salle</button>
+  </div>
+  <div id="shareStatus" class="sub" style="margin:8px 0 12px;font-size:13px"></div>
+  <div class="hist" id="hist"></div>
+  <p class="sub" style="font-size:12px;margin:10px 0 0">Le partage passe par ntfy.sh, un service gratuit. Les tirages, le code de salle et le pseudo y sont visibles par toute personne qui connaît le code, et y restent environ 12 heures. Ne mets rien de personnel dans le pseudo.</p>
+</section>
+
 <p class="foot" id="foot"></p>
 </main>
 
@@ -176,9 +215,9 @@ const TOURS = [
   ["Hacker",                  "hard",   4],
   // ---- Évoluées (Evolved) ----
   ["Operator",                "evo",    4],
-  ["Kingpin",                 "evo",    5],
+  ["Kingpin",                 "evo",    4],
   ["Juggernaut",              "evo",    5],
-  ["Enforcer",                "evo",    5],
+  ["Enforcer",                "evo",    4],
   // ---- Golden ----
   ["Golden Scout",            "gold",   2],
   ["Golden Demoman",          "gold",   2],
@@ -246,6 +285,63 @@ const MAPS_PAR_MODE = {
 const MAPS_RESERVEES = ["Unknown Garden", "Wretched Front", "Outskirts Commune", "Pizza Party", "Polluted Wasteland II", "Badlands II"];
 // ============================================================================
 
+// ============================================================================
+//  MODIFICATEURS  (désactivables sur le site avec la case à cocher)
+//
+//  À chaque « Tout tirer », il y a 1 chance sur 6 d'avoir un modificateur pris
+//  au hasard dans la liste ci-dessous. Change CHANCE_MODIFICATEUR pour modifier
+//  la probabilité (1/6 = une chance sur 6, 1/4 = une sur 4, etc.).
+//
+//  Une ligne = un modificateur :
+//      ["Nom", "Description", ["modes où il est impossible"]],
+//  Laisse [] si le modificateur marche dans tous les modes.
+// ============================================================================
+const CHANCE_MODIFICATEUR = 1/6;
+const MODIFICATEURS = [
+  ["Speedy Enemies",             "Tous les ennemis sont plus rapides (Nimble).", []],
+  ["Glass",                      "La vie de la base est réduite à 1.", ["Hardcore","Voidcore"]],
+  ["Quarantine",                 "Les zones occupées par les tours sont énormes : elles sont très espacées.", []],
+  ["Fog",                        "Brouillard : la portée de toutes les tours est réduite de 35 %.", []],
+  ["Limitation Makes Creativity","La limite de tours est réduite de 50 %.", []],
+  ["Flying Enemies",             "Tous les ennemis volent : il faut de la détection des volants.", []],
+  ["Jailed Towers",              "Après la vague 5, un type de tour est emprisonné à chaque vague.", []],
+  ["Exploding Enemies",          "Les ennemis explosent à leur mort et étourdissent les tours proches.", []],
+  ["Inflation",                  "Les tours et leurs améliorations coûtent 50 % plus cher.", []],
+  ["Committed",                  "Impossible de vendre ses tours.", ["Hardcore","Voidcore"]],
+  ["Hidden Enemies",             "Tous les ennemis sont cachés : il faut de la détection des cachés.", ["Hardcore","Voidcore"]],
+  ["Broke",                      "Les revenus sont réduits de 33 %.", []],
+  ["Healthy Enemies",            "Tous les ennemis ont deux fois plus de vie (Bloated).", []],
+];
+// ============================================================================
+
+// ============================================================================
+//  HISTORIQUE PARTAGÉ
+//
+//  Les 5 derniers tirages sont affichés en bas de la page. Ils sont partagés
+//  entre tous ceux qui utilisent la même « salle » grâce à ntfy.sh (service
+//  gratuit, sans compte). Le code de salle sert de mot de passe.
+//
+//  SALLE_PAR_DEFAUT : la salle utilisée par tout le monde au départ. Change-la
+//  pour une salle à toi. Chacun peut aussi mettre son propre code sur le site,
+//  ou envoyer un lien du type  https://ton-site/?salle=mon-groupe
+// ============================================================================
+const NTFY = "https://ntfy.sh";
+const SALLE_PAR_DEFAUT = "general-k7m2q9x4";
+// ============================================================================
+
+// ============================================================================
+//  IMAGES DES TOURS
+//
+//  Chaque tour tirée s'affiche avec une icône stylée générée par le site (aucune
+//  image du jeu n'est incluse). Pour mettre tes propres images à la place :
+//  crée un dossier "images" à côté de index.html et mets-y un fichier .png par
+//  tour, nommé avec le nom de la tour en minuscules, sans accents, avec des
+//  tirets :   scout.png   golden-scout.png   dj-booth.png   military-base.png
+//  Les tours sans image gardent l'icône générée.
+// ============================================================================
+const DOSSIER_IMAGES = "images/";
+// ============================================================================
+
 const CAT = {
   starter:["Débutantes","--c-starter"], inter:["Intermédiaires","--c-inter"], adv:["Avancées","--c-adv"],
   hard:["Hardcore","--c-hard"], evo:["Évoluées (Evolved)","--c-evo"], gold:["Golden (Golden Perks)","--c-gold"],
@@ -299,8 +395,14 @@ function mapPool(m=mode){
   if(MAPS_PAR_MODE[m]) return maps.filter(x=>MAPS_PAR_MODE[m].includes(x.n));
   return maps.filter(x=>on.grp.has(x.g) && !MAPS_RESERVEES.includes(x.n));
 }
+const MODIFS = MODIFICATEURS.map(([n,d,no])=>({n,d,no:no||[]}));
+MODIFS.forEach(x=>{
+  if(!x.n) errs.push("MODIFICATEURS : un modificateur n'a pas de nom");
+  x.no.forEach(m=>{ if(!MODES.includes(m)) errs.push(`MODIFICATEURS : le mode « ${m} » n'existe pas (${x.n})`); });
+});
+const modifPool = (m=mode) => MODIFS.filter(x=>!x.no.includes(m));
 const on = {cat:new Set(Object.keys(CAT)), mode:new Set(MODES), grp:new Set(Object.keys(MAPGROUPS))};
-let count = 2, players = [], mode = null, map = null, fresh = new Set();
+let count = 2, players = [], mode = null, map = null, modif = null, fresh = new Set();
 const $ = id => document.getElementById(id);
 const rnd = a => a[Math.floor(Math.random()*a.length)];
 
@@ -322,6 +424,12 @@ function rollMode(){
   const p = MODES.filter(m=>on.mode.has(m)); const c = p.filter(m=>m!==mode);
   mode = (c.length?c:p).length ? rnd(c.length?c:p) : null; fresh.add("mode");
   if(!map || !mapPool().includes(map)) rollMap();   // la map doit exister dans ce mode
+  if(modif && !modifPool().includes(modif)){ const q = modifPool(); modif = q.length ? rnd(q) : null; }  // modificateur impossible dans ce mode
+}
+function rollModif(){
+  fresh.add("modif");
+  const q = modifPool();
+  modif = (on.modif && q.length && Math.random() < CHANCE_MODIFICATEUR) ? rnd(q) : null;
 }
 function rollMap(){
   const p = mapPool(); const c = p.filter(m=>m!==map);
@@ -330,7 +438,7 @@ function rollMap(){
 function rollAll(){
   players = Array.from({length:count},()=>Array(5).fill(null));
   for(let s=0;s<5;s++) for(let p=0;p<count;p++) assign(p,s);
-  map = null; rollMode();
+  map = null; modif = null; rollMode(); rollModif();
 }
 function setCount(n){
   count = Math.max(1,Math.min(10,n));
@@ -338,16 +446,38 @@ function setCount(n){
   players.length = count; render();
 }
 
+// ---- Icône d'une tour : image perso si elle existe, sinon badge hexagonal généré
+const noImg = new Set();   // tours sans image (on ne redemande pas)
+const slug = n => n.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
+const hash = n => { let h = 5381; for(const c of n) h = ((h<<5)+h+c.charCodeAt(0))|0; return Math.abs(h); };
+function mono(n){
+  const w = n.replace(/[^A-Za-z0-9 ]/g,"").split(/\s+/).filter(Boolean);
+  if(!w.length) return "?";
+  return w.length>1 ? (w[0][0]+w[1][0]).toUpperCase() : w[0][0].toUpperCase()+(w[0][1]||"").toLowerCase();
+}
+function icon(t){
+  const h = hash(t.n), sl = slug(t.n);
+  const img = (DOSSIER_IMAGES && !noImg.has(sl)) ? `<img src="${esc(DOSSIER_IMAGES+sl)}.png" alt="" data-sl="${esc(sl)}" loading="lazy">` : "";
+  return `<span class="ico" style="--n:${4+h%6};--a:${(h>>3)%60}deg"><span class="hex"><b>${esc(mono(t.n))}</b></span>${img}</span>`;
+}
+// images : si elle se charge, on cache le badge ; sinon on l'enlève et on s'en souvient
+$("players").addEventListener("load", e=>{ if(e.target.tagName==="IMG") e.target.parentNode.classList.add("has-img"); }, true);
+$("players").addEventListener("error", e=>{ if(e.target.tagName==="IMG"){ noImg.add(e.target.dataset.sl); e.target.remove(); } }, true);
+
 function render(){
   $("count").textContent = count;
   $("mode").textContent = mode || "Aucun mode actif";
   $("map").textContent = map ? map.n : "Aucune map active";
+  $("modifCard").hidden = !on.modif;
+  $("modif").textContent = modif ? modif.n : "Aucun";
+  $("modifTag").textContent = modif ? modif.d : `1 chance sur ${Math.round(1/CHANCE_MODIFICATEUR)} à chaque tirage`;
+  $("modif").classList.toggle("fresh", fresh.has("modif"));
   $("mapTag").textContent = map ? map.tag + (MAPS_PAR_MODE[mode] ? " · map du mode " + mode : "") : "";
   ["mode","map"].forEach(k=>{ const e=$(k); e.classList.toggle("fresh", fresh.has(k)); });
   $("players").innerHTML = players.map((pl,pi)=>`
     <div class="player"><header><h3>Joueur ${pi+1}</h3><button data-rp="${pi}">Relancer le joueur</button></header>
     ${pl.map((t,si)=>t?`<div class="slot ${fresh.has(pi+"-"+si)?"fresh":""}" style="--k:var(${CAT[t.c][1]})">
-      <div class="n">${esc(t.n)}<small>${CAT[t.c][0]}${$("hard").checked?" · puissance "+strength(t)+"/5":""}</small></div>
+      ${icon(t)}<div class="n">${esc(t.n)}<small>${CAT[t.c][0]}${$("hard").checked?" · puissance "+strength(t)+"/5":""}</small></div>
       <button data-rs="${pi}-${si}" title="Relancer le slot ${si+1}" aria-label="Relancer le slot ${si+1} du joueur ${pi+1}">↻</button></div>`
       :`<div class="slot"><div class="n">Aucune tour disponible</div></div>`).join("")}
     </div>`).join("");
@@ -368,32 +498,173 @@ $("pools").addEventListener("change",e=>{
   const el = e.target; if(!el.dataset.set) return;
   const s = on[el.dataset.set];
   el.checked ? s.add(el.dataset.key) : s.delete(el.dataset.key);
-  render();
+  render(); savePrefs();
 });
 
 const esc = x => String(x).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 
-$("hard").onchange = render;
-$("plus").onclick = ()=>setCount(count+1);
-$("minus").onclick = ()=>setCount(count-1);
-$("all").onclick = ()=>{ rollAll(); render(); };
-$("rMode").onclick = ()=>{ rollMode(); render(); };
-$("rMap").onclick = ()=>{ rollMap(); render(); };
+// ---- Réglages (gardés dans ce navigateur) + historique des 5 derniers tirages
+const cid = Math.random().toString(36).slice(2,10);           // identifiant de ce navigateur
+// Stockage des choix : d'abord le stockage du navigateur (marche aussi quand on ouvre le
+// fichier sur son ordinateur), sinon un vrai cookie valable 1 an.
+const KEYP = "tds-prefs";
+function readStore(){
+  try{ const v = localStorage.getItem(KEYP); if(v) return JSON.parse(v) || {}; }catch{}
+  try{
+    const c = document.cookie.split("; ").find(x=>x.startsWith(KEYP+"="));
+    if(c) return JSON.parse(decodeURIComponent(c.slice(KEYP.length+1))) || {};
+  }catch{}
+  return {};
+}
+function writeStore(o){
+  const j = JSON.stringify(o);
+  try{ localStorage.setItem(KEYP, j); return; }catch{}
+  try{ document.cookie = `${KEYP}=${encodeURIComponent(j)}; max-age=31536000; path=/; SameSite=Lax`; }catch{}
+}
+function clearStore(){
+  try{ localStorage.removeItem(KEYP); }catch{}
+  try{ document.cookie = `${KEYP}=; max-age=0; path=/`; }catch{}
+}
+const prefs = {share:true, room:SALLE_PAR_DEFAUT, who:"", modif:true, remember:true,
+  count:2, hard:false, dupP:true, dupA:false, offCat:[], offMode:[], offGrp:[]};
+Object.assign(prefs, readStore());
+{ const q = new URLSearchParams(location.search).get("salle"); if(q) prefs.room = q.slice(0,40); }
+on.modif = !!prefs.modif;
+function savePrefs(){
+  if(prefs.remember === false){ clearStore(); return; }
+  prefs.count = count; prefs.hard = $("hard").checked; prefs.dupP = $("dupP").checked; prefs.dupA = $("dupA").checked;
+  prefs.offCat  = Object.keys(CAT).filter(k=>!on.cat.has(k));
+  prefs.offMode = MODES.filter(m=>!on.mode.has(m));
+  prefs.offGrp  = Object.keys(MAPGROUPS).filter(k=>!on.grp.has(k));
+  prefs.modif = on.modif;
+  writeStore(prefs);
+}
+// Remet en place les choix enregistrés (on mémorise ce qui est désactivé : les nouveautés restent actives)
+function applyPrefs(){
+  const arr = a => Array.isArray(a) ? a : [];
+  count = Math.min(10, Math.max(1, Math.round(Number(prefs.count)) || 2));
+  $("hard").checked = !!prefs.hard; $("dupP").checked = prefs.dupP !== false; $("dupA").checked = !!prefs.dupA;
+  on.cat  = new Set(Object.keys(CAT).filter(k=>!arr(prefs.offCat).includes(k)));
+  on.mode = new Set(MODES.filter(m=>!arr(prefs.offMode).includes(m)));
+  on.grp  = new Set(Object.keys(MAPGROUPS).filter(k=>!arr(prefs.offGrp).includes(k)));
+  $("remember").checked = prefs.remember !== false;
+}
+const topic = () => "tdsrnd-" + String(prefs.room||"").toLowerCase().replace(/[^a-z0-9_-]+/g,"-").slice(0,50);
+const hist = new Map();
+let curId = null, es = null, pubTimer = null;
+
+function setStatus(k){
+  $("shareStatus").textContent = {
+    ok:    `● Connecté à la salle « ${prefs.room} »`,
+    retry: "○ Connexion à la salle en cours…",
+    err:   "○ Envoi impossible pour le moment (hors ligne ?)",
+    local: "Historique local : rien n'est partagé"
+  }[k] || "";
+}
+function ago(t){
+  const sec = Math.max(0,(Date.now()-t)/1000|0); if(sec<45) return "à l'instant";
+  const m = Math.round(sec/60); return m<60 ? `il y a ${m} min` : `il y a ${Math.round(m/60)} h`;
+}
+function renderHist(){
+  const list = [...hist.values()].sort((a,b)=>b.t-a.t).slice(0,5);
+  $("hist").innerHTML = list.length ? list.map(e=>`
+    <div class="h ${e.by===cid?"mine":""}">
+      <div class="top"><span>${esc(e.who)}${e.by===cid?" (toi)":""}</span><span>${ago(e.t)}</span></div>
+      <div class="meta">${esc(e.mode||"-")} · ${esc(e.map||"-")}${e.modif?` · <span class="mod">${esc(e.modif)}</span>`:""}</div>
+      ${e.p.map((pl,i)=>`<div class="pl"><b>J${i+1}</b>${pl.map(x=>esc(x)).join(", ")}</div>`).join("")}
+    </div>`).join("") : `<p class="sub" style="margin:0">Aucun tirage pour le moment. Clique sur « Tout tirer ».</p>`;
+}
+// Les messages reçus viennent d'inconnus : on ne garde que des textes courts et bien formés.
+function clean(e, serverTime){
+  if(!e || typeof e!=="object" || typeof e.id!=="string" || !Array.isArray(e.p)) return null;
+  const str = (x,n)=>typeof x==="string" ? x.slice(0,n) : "";
+  let t = Number(e.t), v = Number(e.v);
+  if(!Number.isFinite(t) || Math.abs(t-serverTime)>15*60*1000) t = serverTime;
+  if(!Number.isFinite(v)) v = t;
+  return { id:str(e.id,24), t, v, by:str(e.by,12), who:str(e.who,20)||"Anonyme",
+    mode:str(e.mode,40)||null, map:str(e.map,60)||null, modif:str(e.modif,40)||null,
+    p:e.p.slice(0,10).map(a=>Array.isArray(a) ? a.slice(0,5).map(x=>str(x,40)) : []) };
+}
+function addHist(e){
+  const c = hist.get(e.id); if(c && e.v < c.v) return;
+  hist.set(e.id, e);
+  [...hist.values()].sort((a,b)=>b.t-a.t).slice(20).forEach(x=>hist.delete(x.id));
+  renderHist();
+}
+function publish(e){
+  if(!prefs.share || !prefs.room) return;
+  fetch(`${NTFY}/${topic()}`, {method:"POST", body:JSON.stringify(e)})
+    .then(r=>{ if(!r.ok) throw 0; }).catch(()=>setStatus("err"));
+}
+// Enregistre l'état actuel dans l'historique (nouveau tirage, ou mise à jour du tirage en cours)
+function commit(isNew){
+  if(isNew) curId = Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+  if(!curId) return;
+  const old = hist.get(curId);
+  const e = { id:curId, t:old?old.t:Date.now(), v:Date.now(), by:cid,
+    who:(prefs.who||"").trim().slice(0,20)||"Anonyme",
+    mode, map:map?map.n:null, modif:modif?modif.n:null,
+    p:players.map(pl=>pl.map(t=>t?t.n:"-")) };
+  addHist(e);
+  clearTimeout(pubTimer); pubTimer = setTimeout(()=>publish(e), isNew?0:800);
+}
+function connect(){
+  if(es){ es.close(); es = null; }
+  if(!prefs.share || !prefs.room){ setStatus("local"); return; }
+  setStatus("retry");
+  try{
+    es = new EventSource(`${NTFY}/${topic()}/sse?since=12h`);
+    es.onopen = ()=>setStatus("ok");
+    es.onerror = ()=>setStatus("retry");
+    es.onmessage = ev=>{
+      try{
+        const m = JSON.parse(ev.data); if(m.event!=="message" || !m.message) return;
+        const e = clean(JSON.parse(m.message), (m.time||Date.now()/1000)*1000); if(e) addHist(e);
+      }catch{}
+    };
+  }catch{ setStatus("err"); }
+}
+
+$("hard").onchange = ()=>{ render(); savePrefs(); };
+$("dupP").onchange = savePrefs; $("dupA").onchange = savePrefs;
+$("remember").onchange = ()=>{ prefs.remember = $("remember").checked; savePrefs(); };
+$("reset").onclick = ()=>{ clearStore(); location.replace(location.href.split(/[?#]/)[0]); };
+$("modOn").onchange = ()=>{ on.modif = $("modOn").checked; prefs.modif = on.modif; savePrefs(); if(!on.modif) modif = null; render(); commit(false); };
+$("rModif").onclick = ()=>{ rollModif(); render(); commit(false); };
+$("share").onchange = ()=>{ prefs.share = $("share").checked; savePrefs(); connect(); };
+$("room").onchange = ()=>{ prefs.room = $("room").value.trim().slice(0,40); savePrefs(); hist.clear(); renderHist(); connect(); };
+$("who").onchange = ()=>{ prefs.who = $("who").value.trim().slice(0,20); savePrefs(); };
+$("link").onclick = async ()=>{
+  const url = location.href.split(/[?#]/)[0] + "?salle=" + encodeURIComponent(prefs.room);
+  try{ await navigator.clipboard.writeText(url); $("msg").textContent = "Lien copié."; }
+  catch{ try{ await navigator.share({url}); }catch{ $("msg").textContent = url; } }
+  setTimeout(()=>$("msg").textContent="",4000);
+};
+setInterval(renderHist, 30000);
+$("plus").onclick = ()=>{ setCount(count+1); commit(false); savePrefs(); };
+$("minus").onclick = ()=>{ setCount(count-1); commit(false); savePrefs(); };
+$("all").onclick = ()=>{ rollAll(); render(); commit(true); };
+$("rMode").onclick = ()=>{ rollMode(); render(); commit(false); };
+$("rMap").onclick = ()=>{ rollMap(); render(); commit(false); };
 $("players").onclick = e=>{
   const b = e.target.closest("button"); if(!b) return;
   if(b.dataset.rp!==undefined) rollPlayer(+b.dataset.rp);
   else if(b.dataset.rs){ const [p,s]=b.dataset.rs.split("-").map(Number); assign(p,s); }
-  render();
+  render(); commit(false);
 };
 $("copy").onclick = async ()=>{
-  const txt = `Mode : ${mode}\nMap : ${map?map.n:"-"}\n` + players.map((p,i)=>`Joueur ${i+1} : ${p.map(t=>t?t.n:"-").join(", ")}`).join("\n");
+  const txt = `Mode : ${mode}\nMap : ${map?map.n:"-"}\n` + (modif ? `Modificateur : ${modif.n}\n` : "") + players.map((p,i)=>`Joueur ${i+1} : ${p.map(t=>t?t.n:"-").join(", ")}`).join("\n");
   try{ await navigator.clipboard.writeText(txt); $("msg").textContent="Copié."; }
   catch{ try{ await navigator.share({text:txt}); }catch{ $("msg").textContent="Copie impossible depuis ce navigateur."; } }
   setTimeout(()=>$("msg").textContent="",2000);
 };
 
-if(errs.length){ $("err").hidden=false; $("err").textContent="Erreur dans la liste des tours : "+errs.join(" ; "); }
-buildPools(); rollAll(); render();
+if(errs.length){ $("err").hidden=false; $("err").textContent="Erreur dans la configuration : "+errs.join(" ; "); }
+applyPrefs();
+$("modOn").checked = on.modif;
+$("modLabel").textContent = `Modificateur aléatoire (1 chance sur ${Math.round(1/CHANCE_MODIFICATEUR)})`;
+$("share").checked = prefs.share; $("room").value = prefs.room; $("who").value = prefs.who;
+buildPools(); rollAll(); render(); renderHist(); connect();
 </script>
 </body>
 </html>
