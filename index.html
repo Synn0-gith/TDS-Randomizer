@@ -72,28 +72,6 @@ input[type=text]{font:inherit;color:var(--text);background:#121922;border:1px so
 .h .meta{font-weight:700;margin:4px 0 6px;overflow-wrap:anywhere}
 .h .mod{color:var(--gold)}
 .h .pl{font-size:14px;overflow-wrap:anywhere}.h .pl b{color:var(--mute);margin-right:6px}
-a{color:#7cc4ff}
-.tabs{display:flex;gap:8px;margin:0 0 16px}
-.tabs button{padding:10px 20px;border-radius:999px;font-weight:600}
-.tabs button[aria-selected=true]{background:var(--gold);color:var(--gold-ink);border-color:var(--gold)}
-select,textarea{font:inherit;color:var(--text);background:#121922;border:1px solid var(--line);border-radius:8px;padding:8px 12px;min-height:40px}
-textarea{width:100%;resize:vertical;display:block}
-.form label.f{display:block;margin:14px 0 4px;font-size:14px;color:var(--mute)}
-.form input[type=text],.form select{width:100%}
-.strow{display:grid;grid-template-columns:120px 1fr auto;gap:8px;margin-top:8px;align-items:start}
-@media(max-width:600px){.strow{grid-template-columns:1fr auto}.strow .stw{grid-column:1/-1}.strow .stt{grid-column:1}}
-.st{background:#121922;border:1px solid var(--line);border-radius:10px;padding:14px}
-.st h3{margin:0 0 4px;font-size:18px;overflow-wrap:anywhere}
-.st h4{margin:14px 0 2px;font-size:14px;color:var(--mute)}
-.st .meta{color:var(--mute);font-size:13px}
-.st .tags{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
-.st .tag2{background:#1c2836;border-radius:999px;padding:2px 10px;font-size:13px}
-.st .desc{white-space:pre-wrap;overflow-wrap:anywhere;margin:8px 0}
-.stp{display:grid;grid-template-columns:auto 1fr;gap:10px;margin-top:8px}
-.stp b{background:var(--gold);color:var(--gold-ink);border-radius:6px;padding:2px 8px;height:fit-content;font-size:13px;white-space:nowrap}
-.stp span{white-space:pre-wrap;overflow-wrap:anywhere}
-.vid{margin-top:10px}.vid iframe{width:100%;aspect-ratio:16/9;border:0;border-radius:8px}
-.st .foot2{display:flex;flex-wrap:wrap;gap:12px;margin-top:12px;font-size:13px;color:var(--mute)}
 #err{background:#3a1418;border:1px solid #ff6b6b;color:#ffd6d6;border-radius:8px;padding:10px 14px;margin-bottom:16px;font-size:14px}
 .foot{color:var(--mute);font-size:13px;margin-top:24px}
 html{-webkit-text-size-adjust:100%}
@@ -122,15 +100,8 @@ button,summary,label.chk{touch-action:manipulation;-webkit-tap-highlight-color:t
 <h1>Tower Defense Simulator : Randomizer</h1>
 <p class="sub">Tire au hasard les tours de chaque joueur, le mode et la map. Chaque élément se relance séparément.</p>
 
-<nav class="tabs" role="tablist" aria-label="Sections">
-  <button id="tabBtnR" role="tab" aria-selected="true">Randomizer</button>
-  <button id="tabBtnS" role="tab" aria-selected="false">Stratégies</button>
-</nav>
-
-
 <div id="err" hidden></div>
 
-<div id="viewR">
 <section class="panel">
   <div class="row">
     <span>Nombre de joueurs</span>
@@ -177,57 +148,6 @@ button,summary,label.chk{touch-action:manipulation;-webkit-tap-highlight-color:t
 </section>
 
 <p class="foot" id="foot"></p>
-</div>
-
-<div id="viewS" hidden>
-  <section class="panel">
-    <div class="row">
-      <h2 style="margin:0;font-size:20px;flex:1;min-width:200px">Stratégies de la communauté</h2>
-      <button id="stRefresh">Actualiser</button>
-      <button class="main" id="stNew">Proposer une stratégie</button>
-    </div>
-    <div class="row" style="margin-top:12px">
-      <select id="stMode" aria-label="Filtrer par mode" style="flex:1;min-width:150px"></select>
-      <select id="stMap" aria-label="Filtrer par map" style="flex:1;min-width:150px"></select>
-      <input type="text" id="stSearch" placeholder="Rechercher…" aria-label="Rechercher une stratégie">
-    </div>
-    <div id="stStatus" class="sub" style="margin-top:10px;font-size:14px"></div>
-  </section>
-
-  <section class="panel form" id="stForm" hidden>
-    <h2 style="margin:0 0 4px;font-size:18px">Proposer une stratégie</h2>
-    <p class="sub" style="margin:0;font-size:14px">Décris ta stratégie vague par vague. Une fois envoyée sur GitHub, elle apparaît ici après validation par l'administrateur du site. Un compte GitHub gratuit est nécessaire. Seuls les liens YouTube sont acceptés pour la vidéo.</p>
-    <label class="f" for="fTitle">Titre *</label>
-    <input type="text" id="fTitle" maxlength="80" placeholder="Ex. : Hardcore solo avec Accelerator et Engineer">
-    <label class="f" for="fWho">Ton pseudo</label>
-    <input type="text" id="fWho" maxlength="20" placeholder="Facultatif">
-    <div class="row" style="align-items:flex-start;margin-top:0">
-      <div style="flex:1;min-width:180px"><label class="f" for="fMode">Mode</label><select id="fMode"></select></div>
-      <div style="flex:1;min-width:180px"><label class="f" for="fMap">Map</label><select id="fMap"></select></div>
-    </div>
-    <label class="f" for="fTowers">Tours utilisées (séparées par des virgules)</label>
-    <input type="text" id="fTowers" placeholder="Ex. : Farm, Golden Scout, Engineer, Accelerator, DJ Booth">
-    <label class="f" for="fVideo">Vidéo YouTube (facultatif)</label>
-    <input type="text" id="fVideo" placeholder="https://www.youtube.com/watch?v=… ou https://youtu.be/…">
-    <label class="f" for="fDesc">Résumé de la stratégie</label>
-    <textarea id="fDesc" rows="3" maxlength="600" placeholder="L'idée générale, à quoi elle sert, pour quel niveau…"></textarea>
-    <label class="f">Étape par étape (vague par vague)</label>
-    <div id="stSteps"></div>
-    <div style="margin-top:8px"><button id="stAddStep" type="button">+ Ajouter une étape</button></div>
-    <label class="f" for="fTips">Conseils, erreurs à éviter</label>
-    <textarea id="fTips" rows="3" maxlength="600"></textarea>
-    <div class="row" style="margin-top:16px">
-      <button id="stPreviewBtn" type="button">Aperçu</button>
-      <button class="main" id="stSend" type="button">Envoyer sur GitHub</button>
-      <button id="stClear" type="button">Effacer le formulaire</button>
-    </div>
-    <div id="stMsg" class="sub" style="margin-top:10px;font-size:14px"></div>
-    <textarea id="stBody" rows="8" readonly hidden aria-label="Texte à coller dans GitHub"></textarea>
-    <div id="stPreview" style="margin-top:12px"></div>
-  </section>
-
-  <div class="hist" id="stList"></div>
-</div>
 </main>
 
 <script>
@@ -405,6 +325,8 @@ const MODIFICATEURS = [
 //  pour une salle à toi. Chacun peut aussi mettre son propre code sur le site,
 //  ou envoyer un lien du type  https://ton-site/?salle=mon-groupe
 // ============================================================================
+const NTFY = "https://ntfy.sh";
+const SALLE_PAR_DEFAUT = "general-k7m2q9x4";
 // ============================================================================
 
 // ============================================================================
@@ -418,24 +340,6 @@ const MODIFICATEURS = [
 //  Les tours sans image gardent l'icône générée.
 // ============================================================================
 const DOSSIER_IMAGES = "images/";
-// ============================================================================
-
-// ============================================================================
-//  ONGLET STRATÉGIES
-//
-//  Les stratégies sont stockées dans les « issues » de ton dépôt GitHub (gratuit,
-//  permanent, aucun autre service). Fonctionnement :
-//   1. Quelqu'un remplit le formulaire : GitHub s'ouvre avec son texte prêt.
-//   2. Il clique sur « Submit new issue » (compte GitHub gratuit nécessaire).
-//   3. Toi, propriétaire du dépôt, tu lis la proposition et, si elle te convient,
-//      tu lui ajoutes le label ci-dessous. Seules les issues avec ce label
-//      s'affichent sur le site : c'est ta modération.
-//
-//  DEPOT_GITHUB : "ton-pseudo/tds-randomizer". Laisse vide sur GitHub Pages :
-//  il est détecté tout seul. LABEL_STRATEGIE : à créer dans Issues > Labels.
-// ============================================================================
-const DEPOT_GITHUB = "";
-const LABEL_STRATEGIE = "strategie";
 // ============================================================================
 
 const CAT = {
@@ -756,188 +660,6 @@ $("copy").onclick = async ()=>{
 };
 
 if(errs.length){ $("err").hidden=false; $("err").textContent="Erreur dans la configuration : "+errs.join(" ; "); }
-// ---- Onglet Stratégies (stockées dans les issues GitHub du dépôt, validées avec un label)
-function repoInfo(){
-  if(DEPOT_GITHUB) return DEPOT_GITHUB;
-  const h = location.hostname;
-  if(!h.endsWith(".github.io")) return "";
-  const owner = h.split(".")[0], seg = location.pathname.split("/")[1] || "";
-  return owner + "/" + ((seg && !seg.includes(".")) ? seg : owner + ".github.io");
-}
-// Seuls les liens YouTube sont acceptés : on n'en garde que l'identifiant de 11 caractères.
-function ytId(u){
-  try{
-    const url = new URL(String(u).trim());
-    if(!/^https?:$/.test(url.protocol)) return null;
-    const h = url.hostname.replace(/^www\./,"").replace(/^m\./,"");
-    let id = null;
-    if(h === "youtu.be") id = url.pathname.split("/")[1];
-    else if(h === "youtube.com" || h === "youtube-nocookie.com"){
-      if(url.pathname === "/watch") id = url.searchParams.get("v");
-      else{ const m = url.pathname.match(/^\/(shorts|embed|live|v)\/([^/]+)/); if(m) id = m[2]; }
-    }
-    return /^[A-Za-z0-9_-]{11}$/.test(id || "") ? id : null;
-  }catch{ return null; }
-}
-const b64e = o => { let s = ""; new TextEncoder().encode(JSON.stringify(o)).forEach(c=>s += String.fromCharCode(c)); return btoa(s); };
-const b64d = t => JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(t), c=>c.charCodeAt(0))));
-// Tout ce qui vient de GitHub est du texte d'inconnus : on valide et on borne chaque champ.
-function cleanStrat(o){
-  if(!o || typeof o !== "object") return null;
-  const str = (x,n)=>typeof x==="string" ? x.replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f]/g,"").slice(0,n) : "";
-  const title = str(o.title,80).trim(); if(!title) return null;
-  const arr = a => Array.isArray(a) ? a : [];
-  return { title, who:str(o.who,20).trim(),
-    mode: MODES.includes(o.mode) ? o.mode : "", map:str(o.map,60).trim(),
-    towers: arr(o.towers).slice(0,10).map(x=>str(x,40).trim()).filter(Boolean),
-    video: /^[A-Za-z0-9_-]{11}$/.test(o.video||"") ? o.video : "",
-    desc:str(o.desc,600).trim(), tips:str(o.tips,600).trim(),
-    steps: arr(o.steps).slice(0,25).map(x=>({w:str(x&&x.w,20).trim(), t:str(x&&x.t,500).trim()})).filter(x=>x.w||x.t) };
-}
-function stCard(s, meta){
-  const tag = x=>`<span class="tag2">${esc(x)}</span>`;
-  return `<article class="st">
-    <h3>${esc(s.title)}</h3>
-    <div class="meta">${esc(s.who||"Anonyme")}${meta&&meta.login?` (@${esc(meta.login)})`:""}${meta&&meta.date?` · ${esc(meta.date)}`:""}</div>
-    <div class="tags">${s.mode?tag(s.mode):""}${s.map?tag(s.map):""}${s.towers.map(tag).join("")}</div>
-    ${s.desc?`<p class="desc">${esc(s.desc)}</p>`:""}
-    ${s.video?`<div class="vid"><button type="button" data-play="${esc(s.video)}">▶ Lire la vidéo ici (YouTube)</button> <a href="https://www.youtube.com/watch?v=${esc(s.video)}" target="_blank" rel="noopener noreferrer">Ouvrir sur YouTube</a></div>`:""}
-    ${s.steps.length?`<h4>Étape par étape</h4>`+s.steps.map(x=>`<div class="stp"><b>${x.w?"Vague "+esc(x.w.replace(/^vagues?\s*/i,"")):"Étape"}</b><span>${esc(x.t)}</span></div>`).join(""):""}
-    ${s.tips?`<h4>Conseils</h4><p class="desc">${esc(s.tips)}</p>`:""}
-    ${meta&&meta.url?`<div class="foot2"><span>👍 ${meta.up} · 💬 ${meta.comments}</span><a href="${esc(meta.url)}" target="_blank" rel="noopener noreferrer">Commenter ou voter sur GitHub</a></div>`:""}
-  </article>`;
-}
-
-let stAll = [], stLoaded = false;
-function renderStrats(){
-  const q = $("stSearch").value.trim().toLowerCase(), m = $("stMode").value, mp = $("stMap").value;
-  const list = stAll.filter(({s})=>(!m||s.mode===m) && (!mp||s.map===mp) &&
-    (!q || [s.title,s.who,s.desc,s.tips,s.mode,s.map,...s.towers,...s.steps.map(x=>x.t)].join(" ").toLowerCase().includes(q)))
-    .sort((a,b)=>b.meta.t-a.meta.t);
-  $("stList").innerHTML = list.length ? list.map(x=>stCard(x.s,x.meta)).join("")
-    : `<p class="sub" style="margin:0">Aucune stratégie pour le moment. Sois le premier à en proposer une !</p>`;
-  $("stStatus").textContent = `${list.length} stratégie${list.length>1?"s":""}`;
-}
-async function loadStrategies(force){
-  const repo = repoInfo(), st = $("stStatus");
-  if(!repo){ st.textContent = "Cet onglet fonctionne quand le site est hébergé sur GitHub Pages (ou après avoir renseigné DEPOT_GITHUB dans le code)."; return; }
-  const ck = "tds-strats:" + repo;
-  if(!force){
-    try{ const c = JSON.parse(sessionStorage.getItem(ck)||"null"); if(c && Date.now()-c.t < 5*60e3){ stAll = c.d; renderStrats(); return; } }catch{}
-  }
-  st.textContent = "Chargement…";
-  try{
-    const r = await fetch(`https://api.github.com/repos/${repo}/issues?state=open&labels=${encodeURIComponent(LABEL_STRATEGIE)}&per_page=100`, {headers:{Accept:"application/vnd.github+json"}});
-    if(r.status===403 || r.status===429) throw new Error("limite");
-    if(!r.ok) throw new Error(String(r.status));
-    stAll = (await r.json()).filter(i=>!i.pull_request).map(i=>{
-      const m = /<!--TDS:([A-Za-z0-9+/=]+)-->/.exec(i.body||""); if(!m) return null;
-      let s; try{ s = cleanStrat(b64d(m[1])); }catch{ return null; }
-      if(!s) return null;
-      const t = Date.parse(i.created_at) || 0;
-      return {s, meta:{ t, login:String(i.user&&i.user.login||"").replace(/[^A-Za-z0-9-]/g,"").slice(0,40),
-        date: t ? new Date(t).toLocaleDateString("fr-FR") : "",
-        url: typeof i.html_url==="string" && i.html_url.startsWith("https://github.com/") ? i.html_url : "",
-        up: +(i.reactions&&i.reactions["+1"]) || 0, comments: +i.comments || 0 }};
-    }).filter(Boolean);
-    try{ sessionStorage.setItem(ck, JSON.stringify({t:Date.now(), d:stAll})); }catch{}
-    renderStrats();
-  }catch(e){
-    st.textContent = e.message==="limite" ? "GitHub limite les chargements pour le moment : réessaie dans quelques minutes."
-      : e.message==="404" ? "Dépôt introuvable : il doit être public."
-      : "Impossible de charger les stratégies (hors ligne ?).";
-  }
-}
-
-// ---- Formulaire de proposition
-function addStepRow(w="", t=""){
-  const d = document.createElement("div"); d.className = "strow";
-  d.innerHTML = `<input type="text" class="stw" maxlength="20" placeholder="Vague(s) : 1-5" aria-label="Vagues concernées">
-    <textarea class="stt" rows="2" maxlength="500" placeholder="Ce que tu fais : tours placées, améliorations, ordre…" aria-label="Ce que tu fais"></textarea>
-    <button type="button" class="stx" aria-label="Retirer cette étape">✕</button>`;
-  d.querySelector(".stw").value = w; d.querySelector(".stt").value = t;
-  $("stSteps").appendChild(d);
-}
-function readForm(){
-  const rows = [...document.querySelectorAll("#stSteps .strow")].map(r=>({w:r.querySelector(".stw").value.trim().slice(0,20), t:r.querySelector(".stt").value.trim().slice(0,500)})).filter(x=>x.w||x.t);
-  return { title:$("fTitle").value.trim().slice(0,80), who:$("fWho").value.trim().slice(0,20), mode:$("fMode").value, map:$("fMap").value,
-    towers:$("fTowers").value.split(/[,;\n]/).map(x=>x.trim().slice(0,40)).filter(Boolean).slice(0,10),
-    video:ytId($("fVideo").value)||"", videoRaw:$("fVideo").value.trim(),
-    desc:$("fDesc").value.trim().slice(0,600), steps:rows.slice(0,25), tips:$("fTips").value.trim().slice(0,600) };
-}
-function fillForm(d){
-  $("fTitle").value=d.title||""; $("fWho").value=d.who||prefs.who||""; $("fMode").value=d.mode||""; $("fMap").value=d.map||"";
-  $("fTowers").value=(d.towers||[]).join(", "); $("fVideo").value=d.videoRaw||""; $("fDesc").value=d.desc||""; $("fTips").value=d.tips||"";
-  $("stSteps").innerHTML=""; (d.steps&&d.steps.length?d.steps:[{}]).forEach(x=>addStepRow(x.w,x.t));
-}
-function saveDraft(){ if(prefs.remember===false) return; try{ localStorage.setItem("tds-draft", JSON.stringify(readForm())); }catch{} }
-function formError(s){
-  if(!s.title) return "Donne un titre à ta stratégie.";
-  if(s.videoRaw && !s.video) return "Le lien vidéo doit venir de YouTube (youtube.com ou youtu.be).";
-  if(!s.desc && !s.steps.length) return "Ajoute un résumé ou au moins une étape.";
-  return "";
-}
-function buildBody(s){
-  const c = cleanStrat(s);
-  const md = [ `**${c.title}**`, `Auteur : ${c.who||"Anonyme"}`, `Mode : ${c.mode||"-"} | Map : ${c.map||"-"}`,
-    c.towers.length ? `Tours : ${c.towers.join(", ")}` : "", c.video ? `Vidéo : https://youtu.be/${c.video}` : "", "",
-    c.desc, "", ...c.steps.map(x=>`### ${x.w?"Vague "+x.w.replace(/^vagues?\s*/i,""):"Étape"}\n${x.t}\n`),
-    c.tips ? `### Conseils\n${c.tips}\n` : "" ].join("\n");
-  return md + `\n<!-- Ne touche pas à la ligne ci-dessous : elle sert au site. -->\n<!--TDS:${b64e(c)}-->`;
-}
-async function sendStrat(){
-  const s = readForm(), msg = $("stMsg"), box = $("stBody"); box.hidden = true;
-  const err = formError(s); if(err){ msg.textContent = err; return; }
-  const repo = repoInfo(); if(!repo){ msg.textContent = "Envoi impossible : le site n'est pas relié à un dépôt GitHub (voir DEPOT_GITHUB dans le code)."; return; }
-  const body = buildBody(s), title = "[Stratégie] " + s.title, base = `https://github.com/${repo}/issues/new`;
-  const url = `${base}?title=${encodeURIComponent(title)}&labels=${encodeURIComponent(LABEL_STRATEGIE)}&body=${encodeURIComponent(body)}`;
-  if(url.length < 7000){
-    window.open(url, "_blank", "noopener");
-    msg.textContent = "GitHub s'est ouvert avec ta stratégie. Clique sur « Submit new issue » pour l'envoyer.";
-    return;
-  }
-  // Texte trop long pour l'adresse : on le copie, et on ouvre GitHub avec juste le titre.
-  window.open(`${base}?title=${encodeURIComponent(title)}`, "_blank", "noopener");
-  try{ await navigator.clipboard.writeText(body); msg.textContent = "Ta stratégie est longue : elle est copiée. Colle-la (Ctrl+V) dans la description sur GitHub, puis « Submit new issue »."; }
-  catch{ box.value = body; box.hidden = false; box.select(); msg.textContent = "Copie le texte ci-dessous et colle-le dans la description sur GitHub, puis « Submit new issue »."; }
-}
-
-function showTab(k){
-  const s = k === "s";
-  $("viewR").hidden = s; $("viewS").hidden = !s;
-  $("tabBtnR").setAttribute("aria-selected", String(!s)); $("tabBtnS").setAttribute("aria-selected", String(s));
-  try{ history.replaceState(null, "", s ? "#strategies" : location.pathname + location.search); }catch{}
-  if(s && !stLoaded){ stLoaded = true; loadStrategies(); }
-}
-{
-  const opt = (v,l)=>`<option value="${esc(v)}">${esc(l)}</option>`;
-  const mapNames = [...new Set(maps.map(m=>m.n))].sort((a,b)=>a.localeCompare(b));
-  $("stMode").innerHTML = opt("","Tous les modes") + MODES.map(m=>opt(m,m)).join("");
-  $("stMap").innerHTML  = opt("","Toutes les maps") + mapNames.map(m=>opt(m,m)).join("");
-  $("fMode").innerHTML  = opt("","(non précisé)") + MODES.map(m=>opt(m,m)).join("");
-  $("fMap").innerHTML   = opt("","(non précisée)") + mapNames.map(m=>opt(m,m)).join("");
-  let d = {}; try{ d = JSON.parse(localStorage.getItem("tds-draft")||"{}") || {}; }catch{}
-  fillForm(d);
-  $("tabBtnR").onclick = ()=>showTab("r"); $("tabBtnS").onclick = ()=>showTab("s");
-  $("stRefresh").onclick = ()=>loadStrategies(true);
-  ["stMode","stMap"].forEach(id=>$(id).onchange = renderStrats); $("stSearch").oninput = renderStrats;
-  $("stNew").onclick = ()=>{ $("stForm").hidden = !$("stForm").hidden; if(!$("stForm").hidden) $("stForm").scrollIntoView({behavior:"smooth", block:"start"}); };
-  $("stAddStep").onclick = ()=>{ if(document.querySelectorAll("#stSteps .strow").length < 25){ addStepRow(); saveDraft(); } };
-  $("stSteps").onclick = e=>{ const b = e.target.closest(".stx"); if(b){ b.parentNode.remove(); if(!$("stSteps").children.length) addStepRow(); saveDraft(); } };
-  $("stForm").addEventListener("input", saveDraft); $("stForm").addEventListener("change", saveDraft);
-  $("stPreviewBtn").onclick = ()=>{ const s = readForm(), err = formError(s); $("stMsg").textContent = err;
-    const c = err ? null : cleanStrat(s); $("stPreview").innerHTML = c ? `<h4 style="margin:0 0 6px;color:var(--mute);font-size:14px">Aperçu</h4>` + stCard(c, null) : ""; };
-  $("stSend").onclick = sendStrat;
-  $("stClear").onclick = ()=>{ fillForm({}); $("stPreview").innerHTML = ""; $("stMsg").textContent = ""; $("stBody").hidden = true; try{ localStorage.removeItem("tds-draft"); }catch{} };
-  // lecture d'une vidéo : l'intégration YouTube n'est chargée qu'au clic (aucune requête vers YouTube avant)
-  $("viewS").addEventListener("click", e=>{
-    const b = e.target.closest("[data-play]"); if(!b) return;
-    const id = b.dataset.play; if(!/^[A-Za-z0-9_-]{11}$/.test(id)) return;
-    b.parentNode.innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${id}?rel=0" title="Vidéo YouTube" allow="encrypted-media; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe><div class="sub" style="font-size:13px;margin-top:4px"><a href="https://www.youtube.com/watch?v=${id}" target="_blank" rel="noopener noreferrer">Ouvrir sur YouTube</a></div>`;
-  });
-  if(location.hash === "#strategies") showTab("s");
-}
-
 applyPrefs();
 $("modOn").checked = on.modif;
 $("modLabel").textContent = `Modificateur aléatoire (1 chance sur ${Math.round(1/CHANCE_MODIFICATEUR)})`;
